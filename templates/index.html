@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        span.hint {
+            font-style: italic;
+            color: grey;
+        }
+        ul.browsers {
+            list-style-type: none;
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        .browser--new {
+            margin-left: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <p>Выберите ваш браузер. <span class="hint"> (Подсказка: скорее всего, это {{user_browser}})</span></p>
+    <ul class="browsers">
+        <li><a href="browser/firefox"><img src="https://icons.iconarchive.com/icons/carlosjj/mozilla/72/Firefox-icon.png" width="72" height="72">
+        </a></li>
+        <li><a href="browser/chrome"><img src="https://icons.iconarchive.com/icons/dtafalonso/android-l/72/Chrome-icon.png" width="72" height="72">
+        </a></li>
+        <li><a href="browser/safari"><img src="https://icons.iconarchive.com/icons/hopstarter/sleek-xp-software/72/Safari-icon.png" width="72" height="72">
+        </a></li>
+        <li class="browser--new"><a href="/404"><img src="https://icons.iconarchive.com/icons/kyo-tux/delikate/32/Add-icon.png" width="32" height="32">
+        </a></li>
+    </ul>
+</body>
+</html>
