@@ -63,3 +63,4 @@ def name():
         form.name.data = ''
         flash("Form Submitted Succesffully!")
     return render_template("form.html", name = name, form=form)
+
