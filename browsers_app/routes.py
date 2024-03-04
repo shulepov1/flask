@@ -1,7 +1,7 @@
 from app import app
 import random
 import sqlite3
-from flask import make_response, request, render_template, redirect
+from flask import make_response, request, render_template, redirect, flash
 from .user_agent_handler import get_browser, get_os
 
 def get_db_connection():
@@ -52,4 +52,14 @@ def post_form():
     else:
         return redirect("/browser/create")
 
-    
+from .forms.NameForm import NameForm
+
+@app.route("/name", methods=['GET', 'POST'])
+def name():
+    name = None
+    form = NameForm()
+    if form.validate_on_submit():
+        name = form.name.data
+        form.name.data = ''
+        flash("Form Submitted Succesffully!")
+    return render_template("form.html", name = name, form=form)
