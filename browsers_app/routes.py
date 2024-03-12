@@ -3,6 +3,8 @@ import random
 import sqlite3
 from flask import make_response, request, render_template, redirect, flash
 from .user_agent_handler import get_browser, get_os
+from .forms.NameForm import NameForm
+from .forms.UserForm import UserForm
 
 def get_db_connection():
     conn = sqlite3.connect('DB.db')
@@ -52,7 +54,6 @@ def post_form():
     else:
         return redirect("/browser/create")
 
-from .forms.NameForm import NameForm
 
 @app.route("/name", methods=['GET', 'POST'])
 def name():
@@ -63,4 +64,24 @@ def name():
         form.name.data = ''
         flash("Form Submitted Succesffully!")
     return render_template("form.html", name = name, form=form)
+
+from app import User, db
+
+@app.route("/user/add", methods=['GET', 'POST'])
+def add_user():
+    username = None
+    email = None
+    form = UserForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user is None:
+            user = User(username=form.username.data, email=form.email.data)
+            db.session.add(user)
+            db.session.commit()
+        username = form.username.data
+        form.username.data = ''
+        form.email.data = ''
+        flash('User created successfully')
+    users = User.query.order_by(User.date_added)
+    return render_template('add_user.html', username=username, form=form, users=users)
 
