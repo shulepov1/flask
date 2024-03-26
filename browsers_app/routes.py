@@ -1,7 +1,7 @@
 from app import app
 import random
 import sqlite3
-from flask import make_response, request, render_template, redirect, flash
+from flask import make_response, request, render_template, redirect, flash 
 from .user_agent_handler import get_browser, get_os
 from .forms.NameForm import NameForm
 from .forms.UserForm import UserForm
@@ -84,4 +84,22 @@ def add_user():
         flash('User created successfully')
     users = User.query.order_by(User.date_added)
     return render_template('add_user.html', username=username, form=form, users=users)
+
+@app.route("/user/update/<int:id>", methods=['GET', 'POST'])
+def update_user(id):
+    form = UserForm()
+    user_to_update = User.query.get_or_404(id)
+    if request.method == "POST":
+        print(request.form)
+        user_to_update.username = request.form['username']
+        user_to_update.email = request.form['email']
+        try:
+            db.session.commit()
+            flash("User updated succesfully")
+        except:
+            flash("Update went wrong")
+    return render_template("update_user.html", form=form, user_to_update=user_to_update)
+
+     
+
 
