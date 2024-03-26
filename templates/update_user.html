@@ -23,6 +23,10 @@
     <div class="form-group">
         {{ form.email.label(class="mb-2", text="Your Email") }}
         {{ form.email(class="form-control", value=user_to_update.email) }}
+     <div class="form-group">
+        {{ form.migration_test.label(class="mb-2", text="Your Email") }}
+        {{ form.migration_test(class="form-control", value=user_to_update.migration_test) }}
+    </div>
     </div>
     <br/>
     <input type="submit" value="Submit" class="btn btn-primary">

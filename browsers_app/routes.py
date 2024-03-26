@@ -75,12 +75,13 @@ def add_user():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user is None:
-            user = User(username=form.username.data, email=form.email.data)
+            user = User(username=form.username.data, email=form.email.data, migration_test=form.migration_test.data)
             db.session.add(user)
             db.session.commit()
         username = form.username.data
         form.username.data = ''
         form.email.data = ''
+        form.migration_test.data = ''
         flash('User created successfully')
     users = User.query.order_by(User.date_added)
     return render_template('add_user.html', username=username, form=form, users=users)
@@ -93,6 +94,7 @@ def update_user(id):
         print(request.form)
         user_to_update.username = request.form['username']
         user_to_update.email = request.form['email']
+        user_to_update.migration_test = request.form['migration_test']
         try:
             db.session.commit()
             flash("User updated succesfully")

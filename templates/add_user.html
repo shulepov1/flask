@@ -24,11 +24,20 @@
         {{ form.email.label(class="mb-2") }}
         {{ form.email(class="form-control", placeholder="Email") }}
     </div>
+    <div class="form-group">
+        {{ form.migration_test.label(class="mb-2") }}
+        {{ form.migration_test(class="form-control", placeholder="migration_test") }}
+    </div>
     <br/>
     <input type="submit" value="Submit" class="btn btn-primary">
 </form>
 {% for user in users %}
-    {{ user.id }} {{ user.username }} {{ user.email }}
+    <div>
+        <span>{{user.id}} - </span>
+        <span> <a href="/user/update/{{user.id}}">{{user.username}}</a> - </span>
+        <span>{{user.email}} - </span>
+        <span>{{user.migration_test}}</span>
+    </div>
 {% endfor %}
 
 {% endif %}
