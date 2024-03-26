@@ -34,9 +34,10 @@
 {% for user in users %}
     <div>
         <span>{{user.id}} - </span>
-        <span> <a href="/user/update/{{user.id}}">{{user.username}}</a> - </span>
+        <span> <a href={{url_for('update_user', id=user.id)}}>{{user.username}}</a> - </span>
         <span>{{user.email}} - </span>
         <span>{{user.migration_test}}</span>
+        <span><button><a href={{ url_for('delete_user', id=user.id)}}>Delete</a></button></span>
     </div>
 {% endfor %}
 

@@ -102,6 +102,18 @@ def update_user(id):
             flash("Update went wrong")
     return render_template("update_user.html", form=form, user_to_update=user_to_update)
 
-     
-
+@app.route("/user/delete/<int:id>")
+def delete_user(id):
+    user_to_delete = User.query.get_or_404(id)
+    username = None
+    form = UserForm()
+    try:
+        db.session.delete(user_to_delete)
+        db.session.commit()
+        flash("user has been deleted")
+    except:
+        flash("something went wroing")
+    users = User.query.order_by(User.date_added)
+    # return render_template('add_user.html', username=username, form=form, users=users)
+    return redirect("/user/add")
 
