@@ -1,15 +1,15 @@
-{% extends 'base.html' %}
-
-{% block content %}
-
-{% for message in get_flashed_messages() %}
+{% extends 'base.html' %} {% block content %} {% for message in
+get_flashed_messages() %}
 <div class="alert alert-success alert-dismissible fade show" role="alert">
     {{message}}
-  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+    ></button>
 </div>
-{% endfor %}
-
-{% if not user_to_update %}
+{% endfor %} {% if not user_to_update %}
 <h1>no user_to_update</h1>
 {% else %}
 <h1>Update User:</h1>
@@ -17,23 +17,15 @@
 <form method="POST" class="my-4">
     {{ form.csrf_token }}
     <div class="form-group">
-        {{ form.username.label(class="mb-2", text="Your Username") }}
-        {{ form.username(class="form-control", value=user_to_update.username) }}
+        {{ form.username.label(class="mb-2", text="Your Username") }} {{
+        form.username(class="form-control", value=user_to_update.username) }}
     </div>
     <div class="form-group">
-        {{ form.email.label(class="mb-2", text="Your Email") }}
-        {{ form.email(class="form-control", value=user_to_update.email) }}
-     <div class="form-group">
-        {{ form.migration_test.label(class="mb-2", text="Your Email") }}
-        {{ form.migration_test(class="form-control", value=user_to_update.migration_test) }}
+        {{ form.email.label(class="mb-2", text="Your Email") }} {{
+        form.email(class="form-control", value=user_to_update.email) }}
     </div>
-    </div>
-    <br/>
-    <input type="submit" value="Submit" class="btn btn-primary">
+    <br />
+    <input type="submit" value="Submit" class="btn btn-primary" />
 </form>
-{% for user in users %}
-    {{ user.id }} {{ user.username }} {{ user.email }}
-{% endfor %}
-
-{% endif %}
-{% endblock %}
+{% for user in users %} {{ user.id }} {{ user.username }} {{ user.email }} {%
+endfor %} {% endif %} {% endblock %}

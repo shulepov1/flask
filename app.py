@@ -16,7 +16,6 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(25), nullable=False)
     email = db.Column(db.String(50), nullable=False, unique=True)
-    migration_test = db.Column(db.String(50), nullable=True, default='', unique=False)
     date_added = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     password_hash = db.Column(db.String(128))
 
@@ -33,6 +32,14 @@ class User(db.Model):
 
     def __repr__(self):
         return 'Name: password.getter%r' % self.username
+
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(256))
+    content = db.Column(db.Text)
+    author = db.Column(db.String(256))
+    date_posted = db.Column(db.DateTime, default=datetime.utcnow)
+    slug = db.Column(db.String(256))
 
 from browsers_app import routes
 

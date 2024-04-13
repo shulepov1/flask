@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="shadow p-3 mb-5 bg-body rounded">
+        <div>
+            <h3>{{ post.title }}</h3>
+            <div>Post by {{ post.author }} | {{ post.date_posted }}</div>
+            <br>
+            <div>{{ post.content }}</div>
+        </div>
+    </div>
+    <div>
+        <a href="{{url_for('posts')}}" class="btn btn-outline-secondary btn-md">All Posts</a>
+    </div>
+
+{% endblock %}
