@@ -29,6 +29,16 @@
         {{ form.migration_test(class="form-control", placeholder="migration_test") }}
     </div>
     <br/>
+    <div class="form-group">
+        {{ form.password.label(class="mb-2") }}
+        {{ form.password(class="form-control", placeholder="password") }}
+    </div>
+    <br/>
+    <div class="form-group">
+        {{ form.password2.label(class="mb-2") }}
+        {{ form.password2(class="form-control", placeholder="Confirm Password") }}
+    </div>
+    <br/>
     <input type="submit" value="Submit" class="btn btn-primary">
 </form>
 {% for user in users %}

@@ -5,6 +5,9 @@ from flask import make_response, request, render_template, redirect, flash
 from .user_agent_handler import get_browser, get_os
 from .forms.NameForm import NameForm
 from .forms.UserForm import UserForm
+from .forms.PasswordForm import PasswordForm
+
+from werkzeug.security import generate_password_hash, check_password_hash
 
 def get_db_connection():
     conn = sqlite3.connect('DB.db')
@@ -32,6 +35,8 @@ def browser(browser):
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("404.html"), 404
+    #s family='IBM Plex Mono'
+    #s family='IBM Plex Mono'
 
 @app.errorhandler(500)
 def internal_server_error(e):
@@ -65,6 +70,27 @@ def name():
         flash("Form Submitted Succesffully!")
     return render_template("form.html", name = name, form=form)
 
+@app.route("/test_pw", methods=['GET', 'POST'])
+def test_pw():
+    email = None
+    password = None
+    password_to_check = None
+    passed = None
+    user_found=None
+    form = PasswordForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+
+        form.email.data = ''
+        form.password.data = ''
+
+        user_found = User.query.filter_by(email=email).first()
+
+        passed = check_password_hash(user_found.password_hash, password)
+
+    return render_template("test_pw.html", form=form, email=email, password=password, user=user_found, passed=passed)
+
 from app import User, db
 
 @app.route("/user/add", methods=['GET', 'POST'])
@@ -75,13 +101,15 @@ def add_user():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user is None:
-            user = User(username=form.username.data, email=form.email.data, migration_test=form.migration_test.data)
+            user = User(username=form.username.data, email=form.email.data, migration_test=form.migration_test.data, password=form.password.data)
             db.session.add(user)
             db.session.commit()
         username = form.username.data
         form.username.data = ''
         form.email.data = ''
         form.migration_test.data = ''
+        form.password.data = ''
+        form.password2.data = ''
         flash('User created successfully')
     users = User.query.order_by(User.date_added)
     return render_template('add_user.html', username=username, form=form, users=users)
