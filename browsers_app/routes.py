@@ -1,8 +1,7 @@
-from app import app
-from app import User, Post, db
+from app import app, db, User, Post
 import random
 import sqlite3
-from flask import make_response, request, render_template, redirect, flash 
+from flask import make_response, request, render_template, redirect, flash, url_for
 from .user_agent_handler import get_browser, get_os
 from .forms.NameForm import NameForm
 from .forms.UserForm import UserForm
@@ -170,3 +169,40 @@ def posts():
 def post(id):
     post = Post.query.get_or_404(id)
     return render_template("post.html", post=post)
+
+@app.route("/post/edit/<int:id>", methods=['GET', 'POST'])
+def edit_post(id):
+    post = Post.query.get_or_404(id)
+    form = PostForm()
+
+    if form.validate_on_submit():
+        post.title = form.title.data
+        post.content = form.content.data
+        post.author = form.author.data
+        post.slug = form.slug.data
+
+        db.session.add(post)
+        db.session.commit()
+
+        flash ("Post has been successfully updated!")
+        return redirect(url_for('post', id=post.id))
+    form.title.data = post.title
+    form.content.data = post.content
+    form.author.data = post.author
+    form.slug.data = post.slug
+
+    return render_template("edit_post.html", form=form)
+
+@app.route("/post/delete/<int:id>", methods=['GET'])
+def delete_post(id):
+    try:
+        post_to_delete = Post.query.get_or_404(id)
+        db.session.delete(post_to_delete)
+        db.session.commit()
+
+        flash("Post deleted successfully")
+        return redirect("/posts")
+    except:
+        flash("Something went wrong")
+        return redirect("/posts")
+

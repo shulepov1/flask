@@ -2,6 +2,13 @@
 
 {% block content %}
 
+{% for message in get_flashed_messages() %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{message}}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+
 <form method="POST" class="my-4">
     {{ form.csrf_token }}
     <div class="form-group">
@@ -25,13 +32,5 @@
     <br/>
     <input type="submit" value="Submit" class="btn btn-primary">
 </form>
-{% for user in users %}
-    <div>
-        <span>{{user.id}} - </span>
-        <span> <a href={{url_for('update_user', id=user.id)}}>{{user.username}}</a> - </span>
-        <span>{{user.email}} - </span>
-        <span><button><a href={{ url_for('delete_user', id=user.id)}}>Delete</a></button></span>
-    </div>
-{% endfor %}
 
 {% endblock %}
