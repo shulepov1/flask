@@ -4,8 +4,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
+from flask_login import UserMixin, LoginManager
 from flask_ckeditor import CKEditor
+from flask_mail import Mail
+from os import environ
 
 app = Flask(__name__)
 ckeditor = CKEditor(app)
@@ -18,6 +20,14 @@ migrate = Migrate(app, db)
 login_manager=LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = environ.get('MAIL_USERNAME') 
+app.config['MAIL_PASSWORD'] = environ.get('MAIL_PASSWORD') 
+
+mail = Mail(app)
 
 @login_manager.user_loader
 def load_user(user_id):

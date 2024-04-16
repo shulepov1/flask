@@ -1,12 +1,12 @@
 import random
 import sqlite3
-from app import app, db, User, Post
+from app import app, db, User, Post, mail
 from flask import make_response, request, render_template, redirect, flash, url_for
-from .user_agent_handler import get_browser, get_os
+from .user_agent_handler import get_browser
 from .forms import NameForm, UserForm, PasswordForm, PostForm, LoginForm, SearchForm
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
-
+from werkzeug.security import check_password_hash
+from flask_login import login_user, LoginManager, login_required, logout_user, current_user
+from flask_mail import  Message
 
 def get_db_connection():
     conn = sqlite3.connect('DB.db')
@@ -108,7 +108,8 @@ def add_user():
             return redirect(url_for('login'))
         else:
             flash("User already exists")
-        
+    else:
+        flash("Something went wrong")
     users = User.query.order_by(User.date_added)
     return render_template('add_user.html', username=username, form=form, users=users)
 
@@ -258,3 +259,12 @@ def search():
 def base():
     form = SearchForm()
     return dict(form=form)
+
+@app.route('/send-mail', methods=['POST'])
+def send_mail():
+    email = request.form.get('email')
+    msg = Message(request.form.get('theme'), sender='BBBlog', recipients=[email])
+    msg.body = request.form.get('body') 
+    mail.send(msg)
+    flash("Mail sent!")
+    return redirect(url_for('name'))
