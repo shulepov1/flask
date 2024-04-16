@@ -34,6 +34,11 @@
                 
                 {% endif %}
             </ul>
+            <form class="d-flex" method="POST" action="{{url_for('search')}}">
+                {{ form.hidden_tag() }}
+                <input type="search" class="form-control me-2" placeholder="Search" aria-label="Search", name="searched">
+                <button class="btn btn-outline-secondary" type="submit">Search</button>
+            </form>
         </div>
     </div>
 </nav>

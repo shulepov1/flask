@@ -5,8 +5,10 @@ from flask_migrate import Migrate
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
+from flask_ckeditor import CKEditor
 
 app = Flask(__name__)
+ckeditor = CKEditor(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://ilyapostgres@localhost/flaskmpgu'
 app.config['SECRET_KEY'] = 'temp_key'
 
@@ -47,7 +49,6 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(256))
     content = db.Column(db.Text)
-    # author = db.Column(db.String(256))
     date_posted = db.Column(db.DateTime, default=datetime.utcnow)
     slug = db.Column(db.String(256))
     poster_id = db.Column(db.Integer, db.ForeignKey('user.id'))

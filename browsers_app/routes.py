@@ -3,7 +3,7 @@ import sqlite3
 from app import app, db, User, Post
 from flask import make_response, request, render_template, redirect, flash, url_for
 from .user_agent_handler import get_browser, get_os
-from .forms import NameForm, UserForm, PasswordForm, PostForm, LoginForm
+from .forms import NameForm, UserForm, PasswordForm, PostForm, LoginForm, SearchForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 
@@ -244,3 +244,19 @@ def logout():
 @login_required
 def dashboard():
     return render_template("dashboard.html")
+
+@app.route('/search', methods=['POST'])
+def search():
+    form = SearchForm()
+    posts = Post.query
+    if form.validate_on_submit():
+        searched = form.searched.data
+        posts = posts.filter(Post.content.like('%' + searched + '%'))
+        posts = posts.order_by(Post.title).all()
+        return render_template('search.html', form=form, searched=searched, posts=posts)
+    pass
+
+@app.context_processor
+def base():
+    form = SearchForm()
+    return dict(form=form)

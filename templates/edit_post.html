@@ -1,13 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-{% for message in get_flashed_messages() %}
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-    {{message}}
-  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-{% endfor %}
+{{ ckeditor.load() }}
+{{ ckeditor.config(name='content') }} 
+<h2>Edit Post</h2>
 
 <form method="POST" class="my-4">
     {{ form.csrf_token }}

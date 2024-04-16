@@ -14,7 +14,7 @@
             <h3>{{ post.title }}</h3>
             <div>Post by {{ post.poster.username }} | {{ post.date_posted }}</div>
             <br>
-            <div>{{ post.content }}</div>
+            <div>{{ post.content|safe }}</div>
         </div>
     </div>
     <div>
