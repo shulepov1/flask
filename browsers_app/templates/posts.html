@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% for post in posts %}
+    <div class="shadow p-3 mb-5 bg-body rounded">
+        <a href="{{url_for('main.post', id=post.id)}}">
+            <h3>{{ post.title }}</h3>
+        </a>
+        <div>Post by {{ post.poster.username }} | {{ post.date_posted }}</div>
+        <br>
+        <div>{{ post.content|safe }}</div>
+        <br>
+        <a href="{{url_for('main.post', id=post.id)}}" class="btn btn-outline-secondary btn-sm">View Post</a>
+        {% if current_user.id == post.poster.id %}
+            <a href="{{url_for('main.edit_post', id=post.id)}}" class="btn btn-outline-secondary btn-sm">Edit Post</a>
+            <a href="{{url_for('main.delete_post', id=post.id)}}" class="btn btn-outline-danger btn-sm">Delete</a>
+        {% endif %}
+
+    </div>
+{% endfor %}
+
+{% endblock %}

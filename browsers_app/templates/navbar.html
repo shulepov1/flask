@@ -1,0 +1,47 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('main.index') }}">BBBlog</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{{url_for('main.index')}}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('main.name')}}">Send Email</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('main.posts')}}">Posts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('main.add_post')}}">Add Post</a>
+                </li>
+                {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('main.dashboard')}}">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('main.logout')}}">Logout</a>
+                </li>
+                {% else %}
+                <div style="display:flex">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('main.add_user')}}">Register</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('main.login')}}">Login</a>
+                    </li>
+                </div>
+                
+                {% endif %}
+            </ul>
+            <form class="d-flex" method="POST" action="{{url_for('main.search')}}">
+                {{ form.hidden_tag() }}
+                <input type="search" class="form-control me-2" placeholder="Search" aria-label="Search", name="searched">
+                <button class="btn btn-outline-secondary" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+</nav>
