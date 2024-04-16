@@ -179,6 +179,8 @@ def post(id):
 @login_required
 def edit_post(id):
     post = Post.query.get_or_404(id)
+    if current_user.id != post.poster.id:
+        return redirect('/posts')
     form = PostForm()
 
     if form.validate_on_submit():
@@ -202,11 +204,14 @@ def edit_post(id):
 def delete_post(id):
     try:
         post_to_delete = Post.query.get_or_404(id)
-        db.session.delete(post_to_delete)
-        db.session.commit()
+        if current_user.id != post_to_delete.poster.id:
+            return redirect('/posts')
+        else:
+            db.session.delete(post_to_delete)
+            db.session.commit()
 
-        flash("Post deleted successfully")
-        return redirect("/posts")
+            flash("Post deleted successfully")
+            return redirect("/posts")
     except:
         flash("Something went wrong")
         return redirect("/posts")
