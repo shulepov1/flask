@@ -1,15 +1,8 @@
-{% extends 'base.html' %} {% block content %} {% for message in
-get_flashed_messages() %}
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-    {{message}}
-    <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="alert"
-        aria-label="Close"
-    ></button>
-</div>
-{% endfor %} {% if not user_to_update %}
+{% extends 'base.html' %} 
+
+{% block content %}  
+
+{% if not user_to_update %}
 <h1>no user_to_update</h1>
 {% else %}
 <h1>Update User:</h1>
@@ -27,5 +20,10 @@ get_flashed_messages() %}
     <br />
     <input type="submit" value="Submit" class="btn btn-primary" />
 </form>
-{% for user in users %} {{ user.id }} {{ user.username }} {{ user.email }} {%
-endfor %} {% endif %} {% endblock %}
+{% for user in users %} 
+{{ user.id }} 
+{{ user.username }} 
+{{ user.email }} 
+{% endfor %} 
+{% endif %} 
+{% endblock %}

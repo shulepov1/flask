@@ -10,6 +10,10 @@
     <div><strong>Email</strong>: {{ current_user.email }}</div>
     <div><strong>Date Joined</strong>: {{ current_user.date_added }}</div>
 </div>
+<div>
+    <a href="{{url_for('update_user', id=current_user.id)}}">Edit Profile</a>
+    <a href="{{url_for('delete_user', id=current_user.id)}}">Delete Profile</a>
+</div>
 {% else %}
 <div>Must be logged in...</div>
 {% endif %}
