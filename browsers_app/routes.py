@@ -107,6 +107,7 @@ def add_user():
             form.password.data = ''
             form.password2.data = ''
             flash('User created successfully')
+            return redirect(url_for('login'))
         else:
             flash("User already exists")
         
@@ -149,12 +150,12 @@ def delete_user(id):
 @login_required
 def add_post():
     form = PostForm()
+    poster_id = current_user.id
 
     if form.validate_on_submit():
-        post = Post(title = form.title.data, content=form.content.data, author=form.author.data, slug=form.slug.data)
+        post = Post(title = form.title.data, content=form.content.data, poster_id=poster_id, slug=form.slug.data)
         form.title.data = ''
         form.content.data = ''
-        form.author.data = ''
         form.slug.data = ''
         db.session.add(post)
         db.session.commit()
@@ -183,7 +184,6 @@ def edit_post(id):
     if form.validate_on_submit():
         post.title = form.title.data
         post.content = form.content.data
-        post.author = form.author.data
         post.slug = form.slug.data
 
         db.session.add(post)
@@ -193,7 +193,6 @@ def edit_post(id):
         return redirect(url_for('post', id=post.id))
     form.title.data = post.title
     form.content.data = post.content
-    form.author.data = post.author
     form.slug.data = post.slug
 
     return render_template("edit_post.html", form=form)

@@ -27,6 +27,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(50), nullable=False, unique=True)
     date_added = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     password_hash = db.Column(db.String(128))
+    posts = db.relationship('Post', backref='poster')
 
     @property
     def password(self):
@@ -46,9 +47,10 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(256))
     content = db.Column(db.Text)
-    author = db.Column(db.String(256))
+    # author = db.Column(db.String(256))
     date_posted = db.Column(db.DateTime, default=datetime.utcnow)
     slug = db.Column(db.String(256))
+    poster_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 from browsers_app import routes
 
