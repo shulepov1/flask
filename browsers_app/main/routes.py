@@ -1,6 +1,5 @@
 import random
 import sqlite3
-# from app_file import app
 from .. import db, mail
 from . import main
 from browsers_app.models import User, Post
@@ -9,7 +8,7 @@ from ..user_agent_handler import get_browser
 from ..forms import NameForm, UserForm, PasswordForm, PostForm, LoginForm, SearchForm
 from werkzeug.security import check_password_hash
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
-from flask_mail import  Message
+from flask_mail import Message
 
 def get_db_connection():
     conn = sqlite3.connect('DB.db')
@@ -90,32 +89,6 @@ def test_pw():
 
     return render_template("test_pw.html", form=form, email=email, password=password, user=user_found, passed=passed)
 
-@main.route("/user/add", methods=['GET', 'POST'])
-def add_user():
-    username = None
-    email = None
-    form = UserForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user is None:
-            user = User(username=form.username.data, email=form.email.data, password=form.password.data)
-            db.session.add(user)
-            db.session.commit()
-
-            username = form.username.data
-            form.username.data = ''
-            form.email.data = ''
-            form.password.data = ''
-            form.password2.data = ''
-            flash('User created successfully')
-            return redirect(url_for('main.login'))
-        else:
-            flash("User already exists")
-    else:
-        flash("Something went wrong")
-    users = User.query.order_by(User.date_added)
-    return render_template('add_user.html', username=username, form=form, users=users)
-
 @main.route("/user/update/<int:id>", methods=['GET', 'POST'])
 @login_required
 def update_user(id):
@@ -169,8 +142,8 @@ def add_post():
 @main.route("/posts", methods=['GET'])
 def posts():
     posts = Post.query.order_by(Post.date_posted)
-
-    return render_template("posts.html", posts=posts)
+    count = Post.query.count()
+    return render_template("posts.html", posts=posts, count=count)
 
 @main.route("/post/<int:id>", methods=['GET'])
 def post(id):
@@ -218,29 +191,29 @@ def delete_post(id):
         flash("Something went wrong")
         return redirect("/posts")
 
-@main.route("/login", methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user:
-            if check_password_hash(user.password_hash, form.password.data):
-                login_user(user)
-                flash("Succesfull login")
-                return redirect(url_for('main.dashboard'))
-            else:
-                flash("Wrong Password! Try again.")
-        else:
-            flash("That user does not exist! Try again")
+# @main.route("/login", methods=['GET', 'POST'])
+# def login():
+#     form = LoginForm()
+#     if form.validate_on_submit():
+#         user = User.query.filter_by(username=form.username.data).first()
+#         if user:
+#             if check_password_hash(user.password_hash, form.password.data):
+#                 login_user(user)
+#                 flash("Succesfull login")
+#                 return redirect(url_for('main.dashboard'))
+#             else:
+#                 flash("Wrong Password! Try again.")
+#         else:
+#             flash("That user does not exist! Try again")
     
-    return render_template("login.html", form=form)
+#     return render_template("login.html", form=form)
 
-@main.route("/logout", methods=['GET', 'POST'])
-@login_required
-def logout():
-    logout_user()
-    flash("You have been logged out.")
-    return redirect(url_for('main.login'))
+# @main.route("/logout", methods=['GET', 'POST'])
+# @login_required
+# def logout():
+#     logout_user()
+#     flash("You have been logged out.")
+#     return redirect(url_for('main.login'))
 
 @main.route("/dashboard", methods=['GET', 'POST'])
 @login_required

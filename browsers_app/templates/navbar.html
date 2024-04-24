@@ -23,15 +23,15 @@
                     <a class="nav-link" href="{{url_for('main.dashboard')}}">Dashboard</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{url_for('main.logout')}}">Logout</a>
+                    <a class="nav-link" href="{{url_for('auth.logout')}}">Logout</a>
                 </li>
                 {% else %}
                 <div style="display:flex">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{url_for('main.add_user')}}">Register</a>
+                        <a class="nav-link" href="{{url_for('auth.add_user')}}">Register</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{url_for('main.login')}}">Login</a>
+                        <a class="nav-link" href="{{url_for('auth.login')}}">Login</a>
                     </li>
                 </div>
                 
