@@ -3,10 +3,13 @@ from . import login_manager
 from . import db
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
+from authlib.jose import JsonWebSignature
+
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -14,7 +17,27 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(50), nullable=False, unique=True)
     date_added = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     password_hash = db.Column(db.String(128))
-    posts = db.relationship('Post', backref='poster')
+    posts = db.relationship("Post", backref="poster")
+    confirmed = db.Column(db.Boolean(), default=False)
+
+    def generate_confirmation_token(self, expiration=3600):
+        jws = JsonWebSignature()
+        protected = {"alg": "HS256"}
+        payload = self.id
+        secret = 'SECRET_KEY'
+        return jws.serialize_compact(protected=protected, payload=payload, key=secret)
+
+    def confirm(self, token):
+        jws = JsonWebSignature()
+        trimmed_token = token[2:]
+        data = jws.deserialize_compact(s=trimmed_token, key='SECRET_KEY')
+        if data.payload.decode('utf-8') != str(self.id):
+            print("Not your token")
+            return False
+        else:
+            self.confirmed = True
+            db.session.add(self)
+            return True
 
     @property
     def password(self):
@@ -28,7 +51,8 @@ class User(db.Model, UserMixin):
         return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
-        return 'Name: password.getter%r' % self.username
+        return "Name: password.getter%r" % self.username
+
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -36,4 +60,4 @@ class Post(db.Model):
     content = db.Column(db.Text)
     date_posted = db.Column(db.DateTime, default=datetime.utcnow)
     slug = db.Column(db.String(256))
-    poster_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    poster_id = db.Column(db.Integer, db.ForeignKey("user.id"))

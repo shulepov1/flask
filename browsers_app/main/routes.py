@@ -119,7 +119,7 @@ def delete_user(id):
         flash("something went wroing")
     users = User.query.order_by(User.date_added)
     # return render_template('add_user.html', username=username, form=form, users=users)
-    return redirect("/user/add")
+    return redirect("/r)egister")
 
 @main.route("/post/add", methods=['GET', 'POST'])
 @login_required
@@ -244,3 +244,5 @@ def send_mail():
     mail.send(msg)
     flash("Mail sent!")
     return redirect(url_for('main.name'))
+
+
