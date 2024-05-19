@@ -2,7 +2,7 @@ import unittest
 from flask import current_app
 from browsers_app import create_app, db
 from config import TestingConfig
-from browsers_app.models import User, Post
+from browsers_app.models import User, Post, Permission, AnonUser, Role
 
 class BasicsTestCase(unittest.TestCase):
     def setUp(self):
@@ -51,3 +51,22 @@ class BasicsTestCase(unittest.TestCase):
             db.session.commit()
 
             assert Post.query.count() == 1
+
+
+    def test_user_role(self):
+        Role.insert_roles()
+        user = User(username='test', email="i@i.ru")
+        self.assertTrue(user.can(Permission.COMMENT))
+        self.assertTrue(user.can(Permission.FOLLOW))
+        self.assertTrue(user.can(Permission.WRITE))
+        self.assertFalse(user.can(Permission.MODERATE))
+        self.assertFalse(user.can(Permission.ADMIN))
+        
+    def test_anon_user(self):
+        Role.insert_roles()
+        user = AnonUser()
+        self.assertFalse(user.can(Permission.COMMENT))
+        self.assertFalse(user.can(Permission.FOLLOW))
+        self.assertFalse(user.can(Permission.WRITE))
+        self.assertFalse(user.can(Permission.MODERATE))
+        self.assertFalse(user.can(Permission.ADMIN))

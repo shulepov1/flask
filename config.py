@@ -1,7 +1,7 @@
 from os import environ
 
 class Config(object):
-    SQLALCHEMY_DATABASE_URI = 'postgresql://ilyapostgres@localhost/flaskmpgu'
+    SQLALCHEMY_DATABASE_URI = f'postgresql://{environ.get('USER_USERNAME')}:{environ.get('USER_PASSWORD')}@localhost/flaskmpgu'
     SECRET_KEY = 'temp_key'
     MAIL_SERVER = 'smtp.googlemail.com'
     MAIL_PORT = 587
@@ -11,6 +11,6 @@ class Config(object):
 
 class TestingConfig:
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'postgresql://ilyapostgres@localhost/flaskmpgutest'
+    SQLALCHEMY_DATABASE_URI = f'postgresql://{environ.get('USER_USERNAME')}:{environ.get('USER_PASSWORD')}@localhost/flaskmpgutest'
     SECRET_KEY = 'temp_key'
 

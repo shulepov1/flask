@@ -2,18 +2,31 @@ import random
 import sqlite3
 from .. import db, mail
 from . import main
-from browsers_app.models import User, Post
+from browsers_app.models import User, Post, Permission
 from flask import make_response, request, render_template, redirect, flash, url_for
 from ..user_agent_handler import get_browser
 from ..forms import NameForm, UserForm, PasswordForm, PostForm, LoginForm, SearchForm
 from werkzeug.security import check_password_hash
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 from flask_mail import Message
+from ..decorators import admin_required, permission_required
 
 def get_db_connection():
     conn = sqlite3.connect('DB.db')
     conn.row_factory = sqlite3.Row
     return conn
+
+@main.route("/admin")
+@login_required
+@admin_required
+def admin():
+    return "Admin only"
+
+@main.route("/moder")
+@login_required
+@permission_required(Permission.MODERATE)
+def moder():
+    return "Moderator only"
 
 @main.route("/")
 def index():
@@ -246,3 +259,7 @@ def send_mail():
     return redirect(url_for('main.name'))
 
 
+@main.route("/user/<username>")
+def user(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    return render_template('profile.html', user=user)

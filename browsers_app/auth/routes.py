@@ -16,10 +16,12 @@ def send_confirm(user, token):
     send_mail(user.email, "Confirm your account", 'confirm', user=user, token=token)
     redirect(url_for('main.dashboard'))
 
-# @auth.before_app_request
-# def before_request():
-#     if current_user.confirmed and request.blueprint != 'auth' and request.endpoint != 'static':
-#         return redirect(url_for('auth.unconfirmed'))
+@auth.before_app_request
+def before_request():
+    if current_user.is_authenticated:
+        current_user.ping()
+        if current_user.confirmed and request.blueprint != 'auth' and request.endpoint != 'static':
+            return redirect(url_for('auth.unconfirmed'))
 
 @auth.route("/register", methods=['GET', 'POST'])
 def add_user():
