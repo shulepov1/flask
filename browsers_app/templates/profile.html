@@ -1,12 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>user info</h1>
-    <p>{{user.name}}</p>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block content %}
+{% if current_user.is_authenticated %}
+<h1>{{user.name or user.username}}</h1>
+<div>
+    <div><strong>Username</strong>: {{ user.username }}</div>
+    <div><strong>User Id</strong>: {{ user.id }}</div>
+    <div><strong>Email</strong>: {{ user.email }}</div>
+    <div><strong>Date Joined</strong>: {{ user.date_added }}</div>
+    <div><strong>Name</strong>: {{ user.name or "" }}</div>
+    <div><strong>About</strong>: {{ user.about or ""}}</div>
+
+</div>
+<div class="mt-5">
+    <h2>Posts: </h2>
+    {% for post in posts%}
+        {% include 'post_component.html' %}
+    {% endfor%}
+</div>
+{% else %}
+<div>Must be logged in...</div>
+{% endif %}
+{% endblock %}

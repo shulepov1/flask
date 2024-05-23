@@ -6,6 +6,8 @@ from browsers_app.models import User
 class UserForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired(), Length(min=5, max=25)])
     email = EmailField("Email", validators=[DataRequired(), Email()])
+    name = StringField("Name", validators=[Length(max=25)])
+    about = StringField("About", validators=[Length(max=100)])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=16), EqualTo('password2', message='Passwords must match!')]) 
     password2 = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password', message='Passwords must match!')])
     submit = SubmitField("Submit")

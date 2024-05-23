@@ -111,6 +111,8 @@ def update_user(id):
         print(request.form)
         user_to_update.username = request.form['username']
         user_to_update.email = request.form['email']
+        user_to_update.name = request.form['name']
+        user_to_update.about = request.form['about']
         try:
             db.session.commit()
             flash("User updated succesfully")
@@ -262,4 +264,9 @@ def send_mail():
 @main.route("/user/<username>")
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    return render_template('profile.html', user=user)
+    # if current_user.id == user.id:
+    #     print("redirecting")
+    #     return redirect('/dashboard')
+    posts = Post.query.filter_by(poster_id=user.id).all()
+    
+    return render_template('profile.html', user=user, posts=posts)
