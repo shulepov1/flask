@@ -4,6 +4,7 @@ from . import db
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 from authlib.jose import JsonWebSignature
+from os import environ
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -72,7 +73,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(50), nullable=False, unique=True)
     date_added = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     password_hash = db.Column(db.String(128))
-    posts = db.relationship("Post", backref="post_author")
+    posts = db.relationship("Post", backref="poster")
     confirmed = db.Column(db.Boolean(), default=False)
     name = db.Column(db.String(64))
     about = db.Column(db.Text())
@@ -84,7 +85,7 @@ class User(db.Model, UserMixin):
         super(User, self).__init__(**kwargs)
         if self.role is None:
             # if self.email == app.config['MAIL_USERNAME']:
-            if self.email == "":
+            if self.email == environ.get("ADMIN_MAIL"):
                 self.role = Role.query.filter_by(name='Admin').first()
             if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()

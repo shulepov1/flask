@@ -16,11 +16,11 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
-@main.route("/admin")
-@login_required
-@admin_required
-def admin():
-    return "Admin only"
+# @main.route("/admin")
+# @login_required
+# @admin_required
+# def admin():
+#     return "Admin only"
 
 @main.route("/moder")
 @login_required
