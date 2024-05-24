@@ -2,10 +2,10 @@ import random
 import sqlite3
 from .. import db, mail
 from . import main
-from browsers_app.models import User, Post, Permission
+from browsers_app.models import User, Post, Permission, Role
 from flask import make_response, request, render_template, redirect, flash, url_for
 from ..user_agent_handler import get_browser
-from ..forms import NameForm, UserForm, PasswordForm, PostForm, LoginForm, SearchForm
+from ..forms import NameForm, UserForm, PasswordForm, PostForm, LoginForm, SearchForm, RoleForm
 from werkzeug.security import check_password_hash
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 from flask_mail import Message
@@ -16,11 +16,11 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
-# @main.route("/admin")
-# @login_required
-# @admin_required
-# def admin():
-#     return "Admin only"
+@main.route("/admin")
+@login_required
+@admin_required
+def admin():
+    return "Admin only"
 
 @main.route("/moder")
 @login_required
@@ -107,6 +107,8 @@ def test_pw():
 def update_user(id):
     form = UserForm()
     user_to_update = User.query.get_or_404(id)
+    if not (current_user.can(Permission.ADMIN) or current_user.id == user_to_update.id): 
+        return
     if request.method == "POST":
         print(request.form)
         user_to_update.username = request.form['username']
@@ -116,6 +118,7 @@ def update_user(id):
         try:
             db.session.commit()
             flash("User updated succesfully")
+            return redirect("/dashboard")
         except:
             flash("Update went wrong")
     return render_template("update_user.html", form=form, user_to_update=user_to_update)
@@ -124,17 +127,16 @@ def update_user(id):
 @login_required
 def delete_user(id):
     user_to_delete = User.query.get_or_404(id)
-    username = None
-    form = UserForm()
+    if not (current_user.can(Permission.ADMIN) or current_user.id == user_to_delete.id): 
+        flash("action not permitted")
+        return redirect("/")
     try:
         db.session.delete(user_to_delete)
         db.session.commit()
         flash("user has been deleted")
     except:
         flash("something went wroing")
-    users = User.query.order_by(User.date_added)
-    # return render_template('add_user.html', username=username, form=form, users=users)
-    return redirect("/r)egister")
+    return redirect("/register")
 
 @main.route("/post/add", methods=['GET', 'POST'])
 @login_required
@@ -261,12 +263,23 @@ def send_mail():
     return redirect(url_for('main.name'))
 
 
-@main.route("/user/<username>")
+@main.route("/user/<username>", methods=['GET', 'POST'])
 def user(username):
+    form = RoleForm()
     user = User.query.filter_by(username=username).first_or_404()
+    if request.method == 'POST':
+        if current_user.can(Permission.ADMIN):
+            role = Role.query.filter_by(name=request.form['role']).first()
+            print("new role", role)
+            user.role = role
+            try:
+                db.session.commit()
+                flash("Update role successfully")
+            except:
+                flash("Couldn't update the role")
     # if current_user.id == user.id:
     #     print("redirecting")
     #     return redirect('/dashboard')
     posts = Post.query.filter_by(poster_id=user.id).all()
     
-    return render_template('profile.html', user=user, posts=posts)
+    return render_template('profile.html', user=user, posts=posts, form=form, Permission=Permission)

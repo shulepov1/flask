@@ -1,11 +1,13 @@
 <div class="shadow p-3 mb-5 bg-body rounded">
+    <div class="mb-2">
     {% if current_user.id == post.poster.id %}
-    <div>
         <a href="{{url_for('main.edit_post', id=post.id)}}" class="btn btn-outline-secondary btn-sm">Edit</a>
         <a href="{{url_for('main.delete_post', id=post.id)}}" class="btn btn-outline-danger btn-sm">Delete</a>
-    </div>
+    {% else %}
+        <a href="{{url_for('main.post', id=post.id)}}" class="btn btn-outline-secondary btn-sm">View</a>
     {% endif %}
-    <br/>
+    </div>
+    <!-- <br/> -->
     <div>
         <h3>{{ post.title }}</h3>
         <div>Post by 

@@ -3,6 +3,17 @@
 {% block content %}
 {% if current_user.is_authenticated %}
 <h1>{{user.name or user.username}}</h1>
+{% if current_user.can(Permission.ADMIN) %}
+<form method="POST" class="my-4 border border-primary-subtle p-4" >
+    {{ form.csrf_token }}
+    <p class="m-0">current role: <strong>{{ user.role.name}}</strong></p>
+    <div class="form-group">
+        {{ form.role.label(class="mb-1") }} 
+        {{ form.role(class="form-control m-0")}}
+    </div>
+    <input type="submit" value="Submit" class="btn btn-primary btn-sm mt-2" />
+</form>
+{% endif %}
 <div>
     <div><strong>Username</strong>: {{ user.username }}</div>
     <div><strong>User Id</strong>: {{ user.id }}</div>
@@ -10,7 +21,6 @@
     <div><strong>Date Joined</strong>: {{ user.date_added }}</div>
     <div><strong>Name</strong>: {{ user.name or "" }}</div>
     <div><strong>About</strong>: {{ user.about or ""}}</div>
-
 </div>
 <div class="mt-5">
     <h2>Posts: </h2>

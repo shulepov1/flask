@@ -4,18 +4,18 @@ from browsers_app import create_app, db
 import unittest
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from browsers_app.models import User, Post
+from browsers_app.models import User, Post, Permission
 from flask_login import current_user
 
 class UserView(ModelView):
     column_display_pk = True
     column_list = ('id', 'username', 'email', 'date_added', 'confirmed', 'name', 'about', 'created_at', 'last_seen', 'role_id')
     def is_accessible(self):
-        return current_user.is_authenticated and current_user.can(16)
+        return current_user.is_authenticated and current_user.can(Permission.ADMIN)
 
 class PostView(ModelView):
     def is_accessible(self):
-        return current_user.is_authenticated and current_user.can(16)
+        return current_user.is_authenticated and current_user.can(Permission.ADMIN)
 
 app = create_app(Config)
 migrate = Migrate(app, db)
