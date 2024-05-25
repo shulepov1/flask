@@ -47,11 +47,11 @@ def browser(browser):
 
 @main.errorhandler(404)
 def page_not_found(e):
-    return render_template("404.html"), 404
+    return render_template("/404.html"), 404
 
 @main.errorhandler(500)
 def internal_server_error(e):
-    return render_template("500.html"), 500
+    return render_template("500.html"), 500 
 
 @main.route("/browser/create", methods=["GET"])
 def get_form():
@@ -70,9 +70,8 @@ def post_form():
     else:
         return redirect("/browser/create")
 
-###########################################################
-@main.route("/name", methods=['GET', 'POST'])
-def name():
+@main.route("/send-mail-page", methods=['GET'])
+def send_email_page():
     name = None
     form = NameForm()
     if form.validate_on_submit():
@@ -81,26 +80,18 @@ def name():
         flash("Form Submitted Succesffully!")
     return render_template("form.html", name = name, form=form)
 
-# @main.route("/test_pw", methods=['GET', 'POST'])
-# def test_pw():
-#     email = None
-#     password = None
-#     password_to_check = None
-#     passed = None
-#     user_found=None
-#     form = PasswordForm()
-#     if form.validate_on_submit():
-#         email = form.email.data
-#         password = form.password.data
-
-#         form.email.data = ''
-#         form.password.data = ''
-
-#         user_found = User.query.filter_by(email=email).first()
-
-#         passed = check_password_hash(user_found.password_hash, password)
-
-#     return render_template("test_pw.html", form=form, email=email, password=password, user=user_found, passed=passed)
+@login_required
+@main.route('/send-mail', methods=['POST'])
+def send_mail():
+    try:
+        email = request.form.get('email')
+        msg = Message(request.form.get('theme'), sender='BBBlog', recipients=[email])
+        msg.body = request.form.get('body') 
+        mail.send(msg)
+        flash("Mail sent!")
+    except:
+        flash("couldnt sent the email!")
+    return redirect(url_for('main.send_email_page'))
 
 @main.route("/user/update/<int:id>", methods=['GET', 'POST'])
 @login_required
@@ -108,7 +99,7 @@ def update_user(id):
     form = UserForm()
     user_to_update = User.query.get_or_404(id)
     if not (current_user.can(Permission.ADMIN) or current_user.id == user_to_update.id): 
-        return
+        return redirect("/dashboard")  
     if request.method == "POST":
         print(request.form)
         user_to_update.username = request.form['username']
@@ -121,9 +112,9 @@ def update_user(id):
             return redirect("/dashboard")
         except:
             flash("Update went wrong")
-    return render_template("update_user.html", form=form, user_to_update=user_to_update)
+    return render_template("update_user.html", form=form, user_to_update=user_to_update, Permission=Permission)
 
-@main.route("/user/delete/<int:id>")
+@main.route("/user/delete/<int:id>", methods=["POST"])
 @login_required
 def delete_user(id):
     user_to_delete = User.query.get_or_404(id)
@@ -141,24 +132,30 @@ def delete_user(id):
 @main.route("/post/add", methods=['GET', 'POST'])
 @login_required
 def add_post():
+    if (not current_user.is_authenticated):
+        flash("you're not logged in")
+        return ("/dashboard")
+    
     form = PostForm()
     poster_id = current_user.id
 
     if form.validate_on_submit():
         post = Post(title = form.title.data, content=form.content.data, poster_id=poster_id, slug=form.slug.data)
-        form.title.data = ''
-        form.content.data = ''
-        form.slug.data = ''
-        db.session.add(post)
-        db.session.commit()
-
-        flash("Post added successfully!")
+        try:
+            db.session.add(post)
+            db.session.commit()
+            form.title.data = ''
+            form.content.data = ''
+            form.slug.data = ''
+            flash("Post added successfully!")
+        except:
+            flash("something went wrong")
 
     return render_template("add_post.html", form=form)
 
 @main.route("/posts", methods=['GET'])
 def posts():
-    posts = Post.query.order_by(Post.date_posted)
+    posts = Post.query.order_by(Post.date_posted.desc())
     count = Post.query.count()
     return render_template("posts.html", posts=posts, count=count)
 
@@ -170,25 +167,27 @@ def post(id):
 @main.route("/post/edit/<int:id>", methods=['GET', 'POST'])
 @login_required
 def edit_post(id):
-    post = Post.query.get_or_404(id)
-    if current_user.id != post.poster.id:
+    if not (current_user.can(Permission.MODERATE) or current_user.id == post.poster.id):
         return redirect('/posts')
+    
+    post = Post.query.get_or_404(id)
     form = PostForm()
 
     if form.validate_on_submit():
         post.title = form.title.data
         post.content = form.content.data
         post.slug = form.slug.data
+        try:
+            db.session.add(post)
+            db.session.commit()
+            flash ("Post has been successfully updated!")
+            return redirect(url_for('main.post', id=post.id))
+        except:
+            flash("fields are not valid")
 
-        db.session.add(post)
-        db.session.commit()
-
-        flash ("Post has been successfully updated!")
-        return redirect(url_for('main.post', id=post.id))
     form.title.data = post.title
     form.content.data = post.content
     form.slug.data = post.slug
-
     return render_template("edit_post.html", form=form)
 
 @main.route("/post/delete/<int:id>", methods=['GET'])
@@ -196,12 +195,12 @@ def edit_post(id):
 def delete_post(id):
     try:
         post_to_delete = Post.query.get_or_404(id)
-        if current_user.id != post_to_delete.poster.id:
-            return redirect('/posts')
+        if not (current_user.can(Permission.MODERATE) or current_user.id == post_to_delete.poster.id):
+            flash("dont have permission")
+            return redirect(f"/post/{id}")
         else:
             db.session.delete(post_to_delete)
             db.session.commit()
-
             flash("Post deleted successfully")
             return redirect("/posts")
     except:
@@ -222,40 +221,29 @@ def search():
         posts = posts.filter(Post.content.like('%' + searched + '%'))
         posts = posts.order_by(Post.title).all()
         return render_template('search.html', form=form, searched=searched, posts=posts)
-    pass
+    return redirect(request.referrer)
 
 @main.context_processor
 def base():
+    # send form to base.html -> navbar.html templates
     form = SearchForm()
     return dict(form=form)
-
-@main.route('/send-mail', methods=['POST'])
-def send_mail():
-    email = request.form.get('email')
-    msg = Message(request.form.get('theme'), sender='BBBlog', recipients=[email])
-    msg.body = request.form.get('body') 
-    mail.send(msg)
-    flash("Mail sent!")
-    return redirect(url_for('main.name'))
-
 
 @main.route("/user/<username>", methods=['GET', 'POST'])
 def user(username):
     form = RoleForm()
     user = User.query.filter_by(username=username).first_or_404()
+    if not User:
+        return render_template("/404.html")
     if request.method == 'POST':
-        if current_user.can(Permission.ADMIN):
+        if current_user.can(Permission.ADMIN) and form.validate_on_submit():
             role = Role.query.filter_by(name=request.form['role']).first()
-            print("new role", role)
             user.role = role
             try:
                 db.session.commit()
                 flash("Update role successfully")
             except:
                 flash("Couldn't update the role")
-    # if current_user.id == user.id:
-    #     print("redirecting")
-    #     return redirect('/dashboard')
     posts = Post.query.filter_by(poster_id=user.id).all()
     
     return render_template('profile.html', user=user, posts=posts, form=form, Permission=Permission)

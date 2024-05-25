@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% if current_user.is_authenticated %}
 <h1>{{user.name or user.username}}</h1>
 {% if current_user.can(Permission.ADMIN) %}
 <form method="POST" class="my-4 border border-primary-subtle p-4" >
@@ -24,11 +23,12 @@
 </div>
 <div class="mt-5">
     <h2>Posts: </h2>
-    {% for post in posts%}
-        {% include 'post_component.html' %}
-    {% endfor%}
+    {% if posts %}
+        {% for post in posts%}
+            {% include 'post_component.html' %}
+        {% endfor%}
+    {% else %}
+    <p>No posts yet.</a></p>
+    {% endif %}
 </div>
-{% else %}
-<div>Must be logged in...</div>
-{% endif %}
 {% endblock %}

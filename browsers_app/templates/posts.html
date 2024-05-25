@@ -3,6 +3,7 @@
 {% block content %}
 
 {% if count > 0 %}
+<p> {{ count }} posts in total:</p>   
 {% for post in posts %}
     {% include 'post_component.html' %}
 {% endfor %}

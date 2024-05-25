@@ -2,18 +2,6 @@
 
 {% block content %}
 
-<!-- {% if name %}
-<h1>Hello, {{name}}</h1>
-{% else %}
-<form method="POST" class="my-4">
-    {{ form.csrf_token }}
-    <div class="form-group">
-        {{ form.name.label(class="mb-2") }}
-        {{ form.name(class="form-control" , placeholder="Name") }}
-    </div>
-    <br/>
-    <input type="submit" value="Submit" class="btn btn-primary">
-</form> -->
 <h2>Send Email</h2>
 <form action="/send-mail" method="POST" class="my-4">
     {{ form.csrf_token }}
@@ -33,7 +21,4 @@
     <br/>
     <input class="btn btn-primary" type="submit" value="Send email">
 </form>
-
-
-{% endif %}
 {% endblock %}
