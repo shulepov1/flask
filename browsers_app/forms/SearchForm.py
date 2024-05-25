@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, BooleanField, ValidationError
-from wtforms.validators import DataRequired, EqualTo
+from wtforms import StringField, SubmitField
+from wtforms.validators import DataRequired
+
 
 class SearchForm(FlaskForm):
-    searched=StringField("Searched", validators=[DataRequired()])
-    submit=SubmitField()
+    searched = StringField("Searched", validators=[DataRequired()])
+    submit = SubmitField()

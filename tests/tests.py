@@ -4,6 +4,7 @@ from browsers_app import create_app, db
 from config import TestingConfig
 from browsers_app.models import User, Post, Permission, AnonUser, Role
 
+
 class BasicsTestCase(unittest.TestCase):
     def setUp(self):
         self.app = create_app(TestingConfig)
@@ -31,7 +32,7 @@ class BasicsTestCase(unittest.TestCase):
         tester = self.app.test_client(self)
         response = tester.get('/nonexistent', content_type='html/text')
         self.assertEqual(response.status_code, 404)
-    
+
     def test_user_model(self):
         u = User(username='test', email="i@i.ru")
         db.session.add(u)
@@ -46,12 +47,12 @@ class BasicsTestCase(unittest.TestCase):
             db.session.add(user)
             db.session.commit()
 
-            post = Post(title='Test Post', content='This is a test.', poster_id=user.id)
+            post = Post(title='Test Post',
+                        content='This is a test.', poster_id=user.id)
             db.session.add(post)
             db.session.commit()
 
             assert Post.query.count() == 1
-
 
     def test_user_role(self):
         Role.insert_roles()
@@ -61,7 +62,7 @@ class BasicsTestCase(unittest.TestCase):
         self.assertTrue(user.can(Permission.WRITE))
         self.assertFalse(user.can(Permission.MODERATE))
         self.assertFalse(user.can(Permission.ADMIN))
-        
+
     def test_anon_user(self):
         Role.insert_roles()
         user = AnonUser()

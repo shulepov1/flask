@@ -9,6 +9,7 @@ def get_os(user_agent_string):
         return "Linux"
     return "Что-то малопопулярное"
 
+
 def get_browser(user_agent_string):
     if not user_agent_string or user_agent_string == "":
         return "???"
@@ -23,4 +24,3 @@ def get_browser(user_agent_string):
     if "OP" in user_agent_string:
         return "Opera"
     return "Что-то малопопулярное"
-

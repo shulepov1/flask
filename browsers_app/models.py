@@ -6,9 +6,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from authlib.jose import JsonWebSignature
 from os import environ
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
 
 class Permission:
     FOLLOW = 1
@@ -17,8 +19,8 @@ class Permission:
     MODERATE = 8
     ADMIN = 16
 
+
 class Role(db.Model):
-    # __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(60), unique=True)
     users = db.relationship('User', backref='role', lazy='dynamic')
@@ -30,10 +32,9 @@ class Role(db.Model):
         if self.permissions is None:
             self.permissions = 0
 
-
     def __repr__(self):
         return "Role: %r" % self.name
-    
+
     @staticmethod
     def insert_roles():
         roles = {
@@ -52,7 +53,7 @@ class Role(db.Model):
             role.default = (role.name == default_role)
             db.session.add(role)
         db.session.commit()
-    
+
     def has_permission(self, perm):
         return self.permissions & perm == perm
 
@@ -67,6 +68,7 @@ class Role(db.Model):
     def reset_permission(self):
         self.permissions = 0
 
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(25), nullable=False, unique=True)
@@ -79,12 +81,11 @@ class User(db.Model, UserMixin):
     about = db.Column(db.Text())
     created_at = db.Column(db.DateTime(), default=datetime.utcnow())
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow())
-    role_id=db.Column(db.Integer, db.ForeignKey("role.id"))
+    role_id = db.Column(db.Integer, db.ForeignKey("role.id"))
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
         if self.role is None:
-            # if self.email == app.config['MAIL_USERNAME']:
             if self.email == environ.get("ADMIN_MAIL"):
                 self.role = Role.query.filter_by(name='Admin').first()
             if self.role is None:
@@ -92,7 +93,7 @@ class User(db.Model, UserMixin):
 
     def can(self, perm):
         return self.role is not None and self.role.has_permission(perm)
-    
+
     def is_admin(self):
         return self.can(Permission.ADMIN)
 
@@ -133,12 +134,15 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return "Name: password.getter%r" % self.username
-    
+
+
 class AnonUser(AnonymousUserMixin):
     def can(self, perm):
         return False
+
     def is_admin(self):
         return False
+
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -147,5 +151,6 @@ class Post(db.Model):
     date_posted = db.Column(db.DateTime, default=datetime.utcnow)
     slug = db.Column(db.String(256))
     poster_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+
 
 login_manager.anonymous_user = AnonUser
