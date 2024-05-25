@@ -1,13 +1,14 @@
+<link rel="stylesheet" type=text/css href="{{ url_for('static', filename='postView.css')}}">
 <div class="shadow p-3 mb-5 bg-body rounded">
-    <div class="mb-2">
-    {% if current_user.role and current_user.id == post.poster.id %}
-        <a href="{{url_for('main.edit_post', id=post.id)}}" class="btn btn-outline-secondary btn-sm">Edit</a>
-        <a href="{{url_for('main.delete_post', id=post.id)}}" class="btn btn-outline-danger btn-sm">Delete</a>
-    {% else %}
+    <div class="mb-3 d-flex justify-content-between">
         <a href="{{url_for('main.post', id=post.id)}}" class="btn btn-outline-secondary btn-sm">View</a>
+    {% if current_user.role and current_user.id == post.poster.id %}
+        <div class="d-flex gap-2">
+            <a href="{{url_for('main.edit_post', id=post.id)}}" class="btn btn-outline-secondary btn-sm">Edit</a>
+            <a href="{{url_for('main.delete_post', id=post.id)}}" class="btn btn-outline-danger btn-sm">Delete</a>
+        </div>
     {% endif %}
     </div>
-    <!-- <br/> -->
     <div>
         <h3>{{ post.title }}</h3>
         <div>Post by 
@@ -16,6 +17,6 @@
             </a>
             | {{ post.date_posted }}</div>
         <br>
-        <div>{{ post.content|safe }}</div>
+        <div class="postView">{{ post.content|safe }}</div>
     </div>
 </div>

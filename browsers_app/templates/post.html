@@ -2,9 +2,26 @@
 
 {% block content %}
 
-    {% include 'post_component.html' %}
+<div class="shadow p-3 mb-5 bg-body rounded">
+    <div class="mb-2">
+    {% if current_user.role and current_user.id == post.poster.id %}
+        <a href="{{url_for('main.edit_post', id=post.id)}}" class="btn btn-outline-secondary btn-sm">Edit</a>
+        <a href="{{url_for('main.delete_post', id=post.id)}}" class="btn btn-outline-danger btn-sm">Delete</a>
+    {% endif %}
+    </div>
     <div>
-        <a href="{{url_for('main.posts')}}" class="btn btn-outline-secondary btn-md">All Posts</a>
+        <h3>{{ post.title }}</h3>
+        <div>Post by 
+            <a href="{{url_for('main.user', username=post.poster.username)}}">
+                {{ post.poster.username }}
+            </a>
+            | {{ post.date_posted }}</div>
+        <br>
+        <div>{{ post.content|safe }}</div>
+    </div>
+</div>
+    <div>
+        <a href="{{url_for('main.posts')}}" class="btn btn-outline-secondary btn-md">Back to Posts</a>
     </div>
 
 {% endblock %}
