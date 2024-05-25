@@ -1,11 +1,18 @@
 from browsers_app.models import User
 from . import auth
-from ..forms import UserForm, LoginForm
+from ..forms import UserForm, LoginForm, SearchForm
 from .. import db, mail 
 from flask import flash, redirect, render_template, url_for, request
 from flask_mail import Message
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
+from functools import partial
+
+@auth.context_processor
+def base():
+    # send form to base.html -> navbar.html templates
+    form = SearchForm()
+    return dict(form=form)
 
 @login_required
 def send_mail(to, subject, template, **kwargs):
@@ -19,11 +26,29 @@ def send_confirm(user, token):
     send_mail(user.email, "Confirm your account", 'confirm', user=user, token=token)
     redirect(url_for('main.dashboard'))
 
+@auth.route("/unconfirmed")
+def unconfirmed():
+    if current_user.is_anonymous or current_user.confirmed:
+        return redirect(url_for('main.index'))
+    return render_template('auth/unconfirmed.html')
+
+@login_required
+@auth.route("/send_email_confirm", methods=['POST'])
+def send_confirm_url():
+    if request.method == 'POST':
+        try:
+            token = current_user.generate_confirmation_token()
+            send_confirm(current_user, token)
+            flash("new link sent")
+        except:
+            flash("couldnt sent the link, try again later")
+    return redirect(request.referrer)
+
 @auth.before_app_request
 def before_request():
     if current_user.is_authenticated:
         current_user.ping()
-        if current_user.confirmed and request.blueprint != 'auth' and request.endpoint != 'static':
+        if not current_user.confirmed and request.blueprint != 'auth' and request.endpoint != 'static':
             return redirect(url_for('auth.unconfirmed'))
 
 @auth.route("/register", methods=['GET', 'POST'])
@@ -50,8 +75,10 @@ def add_user():
     return render_template('add_user.html', form=form, users=users)
 
 @auth.route("/confirm/<token>")
-# @login_required
+@login_required
 def confirm(token):
+    if not (current_user.is_authenticated):
+        return "<h2>you have to be logged in to confirm your account</h2>"
     print(token)
     print(current_user.is_authenticated)
     if current_user.confirmed:
@@ -62,13 +89,6 @@ def confirm(token):
     else:
         flash("Ваша ссылка не валидна или истекла")
     return redirect(url_for('main.dashboard'))
-
-@auth.route("/unconfirmed")
-def unconfirmed():
-    if current_user.is_anonymous or current_user.confirmed:
-        return redirect(url_for('main.index'))
-    return render_template('auth/unconfirmed.html')
-
 
 @auth.route("/login", methods=['GET', 'POST'])
 def login():
