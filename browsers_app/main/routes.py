@@ -34,7 +34,6 @@ def index():
     browsers = conn.execute('SELECT * FROM Browsers').fetchall()
     conn.close()
     user_agent_string = str(request.headers.get('User-Agent'))
-    # user_os = get_os(user_agent_string) 
     user_browser = get_browser(user_agent_string)
     response = make_response(render_template("index.html", user_browser=user_browser, browsers=browsers))
     if (user_browser == "Firefox"):
@@ -71,6 +70,7 @@ def post_form():
     else:
         return redirect("/browser/create")
 
+###########################################################
 @main.route("/name", methods=['GET', 'POST'])
 def name():
     name = None
@@ -81,26 +81,26 @@ def name():
         flash("Form Submitted Succesffully!")
     return render_template("form.html", name = name, form=form)
 
-@main.route("/test_pw", methods=['GET', 'POST'])
-def test_pw():
-    email = None
-    password = None
-    password_to_check = None
-    passed = None
-    user_found=None
-    form = PasswordForm()
-    if form.validate_on_submit():
-        email = form.email.data
-        password = form.password.data
+# @main.route("/test_pw", methods=['GET', 'POST'])
+# def test_pw():
+#     email = None
+#     password = None
+#     password_to_check = None
+#     passed = None
+#     user_found=None
+#     form = PasswordForm()
+#     if form.validate_on_submit():
+#         email = form.email.data
+#         password = form.password.data
 
-        form.email.data = ''
-        form.password.data = ''
+#         form.email.data = ''
+#         form.password.data = ''
 
-        user_found = User.query.filter_by(email=email).first()
+#         user_found = User.query.filter_by(email=email).first()
 
-        passed = check_password_hash(user_found.password_hash, password)
+#         passed = check_password_hash(user_found.password_hash, password)
 
-    return render_template("test_pw.html", form=form, email=email, password=password, user=user_found, passed=passed)
+#     return render_template("test_pw.html", form=form, email=email, password=password, user=user_found, passed=passed)
 
 @main.route("/user/update/<int:id>", methods=['GET', 'POST'])
 @login_required
@@ -208,33 +208,9 @@ def delete_post(id):
         flash("Something went wrong")
         return redirect("/posts")
 
-# @main.route("/login", methods=['GET', 'POST'])
-# def login():
-#     form = LoginForm()
-#     if form.validate_on_submit():
-#         user = User.query.filter_by(username=form.username.data).first()
-#         if user:
-#             if check_password_hash(user.password_hash, form.password.data):
-#                 login_user(user)
-#                 flash("Succesfull login")
-#                 return redirect(url_for('main.dashboard'))
-#             else:
-#                 flash("Wrong Password! Try again.")
-#         else:
-#             flash("That user does not exist! Try again")
-    
-#     return render_template("login.html", form=form)
-
-# @main.route("/logout", methods=['GET', 'POST'])
-# @login_required
-# def logout():
-#     logout_user()
-#     flash("You have been logged out.")
-#     return redirect(url_for('main.login'))
-
 @main.route("/dashboard", methods=['GET', 'POST'])
 @login_required
-def dashboard():
+def dashboard():    
     return render_template("dashboard.html")
 
 @main.route('/search', methods=['POST'])

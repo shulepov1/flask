@@ -7,11 +7,14 @@ from flask_mail import Message
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 
+@login_required
 def send_mail(to, subject, template, **kwargs):
     msg = Message(subject, sender='fwson12@gmail.com', recipients=[to])
     # msg.html = render_template("confirm.html", **kwargs)
     msg.body = render_template("confirm.txt", **kwargs)
     mail.send(msg)
+
+@login_required
 def send_confirm(user, token):
     send_mail(user.email, "Confirm your account", 'confirm', user=user, token=token)
     redirect(url_for('main.dashboard'))
@@ -25,6 +28,8 @@ def before_request():
 
 @auth.route("/register", methods=['GET', 'POST'])
 def add_user():
+    if current_user.is_authenticated:
+        return redirect("/dashboard")
     form = UserForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -45,7 +50,7 @@ def add_user():
     return render_template('add_user.html', form=form, users=users)
 
 @auth.route("/confirm/<token>")
-@login_required
+# @login_required
 def confirm(token):
     print(token)
     print(current_user.is_authenticated)
@@ -67,6 +72,8 @@ def unconfirmed():
 
 @auth.route("/login", methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect("/dashboard")
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
