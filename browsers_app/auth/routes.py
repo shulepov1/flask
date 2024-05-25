@@ -8,15 +8,6 @@ from werkzeug.security import check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 
 
-@auth.context_processor
-def base():
-    """
-    передавать form в base.html -> navbar.html темплейты
-    """
-    form = SearchForm()
-    return dict(form=form)
-
-
 @login_required
 def send_mail(to, subject, template, **kwargs):
     """

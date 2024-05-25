@@ -1,5 +1,6 @@
 from app_file import app
 from flask import render_template
+from browsers_app.forms import SearchForm
 
 
 @app.errorhandler(404)
@@ -24,3 +25,11 @@ def method_not_allowed(e):
     page for 405 error, method not found
     """
     return render_template("/405.html"), 405
+
+@app.context_processor
+def base():
+    """
+    передавать form в base.html -> navbar.html темплейты
+    """
+    form = SearchForm()
+    return dict(form=form)

@@ -42,4 +42,4 @@ def test():
     tests = unittest.TestLoader().discover('tests')
     unittest.TextTestRunner(verbosity=2).run(tests)
 
-from errorRoutes import *
+from routes import *

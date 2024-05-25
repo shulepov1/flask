@@ -101,7 +101,7 @@ class User(db.Model, UserMixin):
         jws = JsonWebSignature()
         protected = {"alg": "HS256"}
         payload = self.id
-        secret = 'SECRET_KEY'
+        secret = 'SECRET_KEY' 
         return jws.serialize_compact(protected=protected, payload=payload, key=secret)
 
     def confirm(self, token):
