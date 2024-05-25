@@ -6,6 +6,7 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from browsers_app.models import User, Post, Permission
 from flask_login import current_user
+from flask import render_template
 
 class UserView(ModelView):
     column_display_pk = True
@@ -27,3 +28,5 @@ admin.add_view(PostView(Post, db.session))
 def test():
     tests = unittest.TestLoader().discover('tests')
     unittest.TextTestRunner(verbosity=2).run(tests)
+
+from errorRoutes import *

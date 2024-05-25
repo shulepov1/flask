@@ -6,7 +6,6 @@ from flask import flash, redirect, render_template, url_for, request
 from flask_mail import Message
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
-from functools import partial
 
 @auth.context_processor
 def base():

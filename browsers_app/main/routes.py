@@ -45,14 +45,6 @@ def index():
 def browser(browser):
     return f'<h1>page for {browser}</h1>'
 
-@main.errorhandler(404)
-def page_not_found(e):
-    return render_template("/404.html"), 404
-
-@main.errorhandler(500)
-def internal_server_error(e):
-    return render_template("500.html"), 500 
-
 @main.route("/browser/create", methods=["GET"])
 def get_form():
     return render_template("browser_form.html")
