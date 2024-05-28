@@ -142,7 +142,7 @@ def update_user(id):
             return redirect("/dashboard")
         except:
             flash("Update went wrong")
-    return render_template("update_user.html", form=form, user_to_update=user_to_update, Permission=Permission)
+    return render_template("update_user.html", form=form, user_to_update=user_to_update)
 
 
 @main.route("/user/delete/<int:id>", methods=["POST"])
@@ -310,4 +310,4 @@ def user(username):
                 flash("Couldn't update the role")
     posts_ = Post.query.filter_by(poster_id=user_.id).all()
 
-    return render_template('profile.html', user=user_, posts=posts_, form=form, Permission=Permission)
+    return render_template('profile.html', user=user_, posts=posts_, form=form)

@@ -1,6 +1,7 @@
 from app_file import app
 from flask import render_template
 from browsers_app.forms import SearchForm
+from browsers_app.models import Permission
 
 
 @app.errorhandler(404)
@@ -32,4 +33,4 @@ def base():
     передавать form в base.html -> navbar.html темплейты
     """
     form = SearchForm()
-    return dict(form=form)
+    return dict(form=form, Permission=Permission)

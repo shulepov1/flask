@@ -1,3 +1,4 @@
+from os import environ
 import unittest
 from flask import current_app
 from browsers_app import create_app, db
@@ -71,3 +72,12 @@ class BasicsTestCase(unittest.TestCase):
         self.assertFalse(user.can(Permission.WRITE))
         self.assertFalse(user.can(Permission.MODERATE))
         self.assertFalse(user.can(Permission.ADMIN))
+
+    def test_admin_user(self):
+        Role.insert_roles()
+        user = User(username='test_admin', email=environ.get("ADMIN_EMAIL"))
+        self.assertTrue(user.can(Permission.COMMENT))
+        self.assertTrue(user.can(Permission.FOLLOW))
+        self.assertTrue(user.can(Permission.WRITE))
+        self.assertTrue(user.can(Permission.MODERATE))
+        self.assertTrue(user.can(Permission.ADMIN))

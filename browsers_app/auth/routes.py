@@ -8,25 +8,24 @@ from werkzeug.security import check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 
 
-@login_required
 def send_mail(to, subject, template, **kwargs):
     """
     метод для отправки писем
     """
+    print("to", to, "subject", subject)
     msg = Message(subject, sender='fwson12@gmail.com', recipients=[to])
     # msg.html = render_template("confirm.html", **kwargs)
     msg.body = render_template("confirm.txt", **kwargs)
     mail.send(msg)
+    print("SENT", mail)
 
-
-@login_required
 def send_confirm(user, token):
     """
     метод для отправки подтверждения
     с последующим редиректом
     """
-    send_mail(user.email, "Confirm your account",
-              'confirm', user=user, token=token)
+    print("sending confirm")
+    send_mail(user.email, "Confirm your account", 'confirm', user=user, token=token)
     redirect(url_for('main.dashboard'))
 
 
@@ -68,7 +67,7 @@ def before_request():
     """
     if current_user.is_authenticated:
         current_user.ping()
-        if not current_user.confirmed and request.blueprint != 'auth' and request.endpoint != 'static':
+        if not current_user.confirmed and request.blueprint != 'auth' and request.endpoint != 'static' and request.path != '/dashboard':
             return redirect(url_for('auth.unconfirmed'))
 
 
@@ -89,10 +88,12 @@ def add_user():
             db.session.add(user)
             db.session.commit()
             flash('User created successfully')
-            token = user.generate_confirmation_token()
-            send_confirm(user, token)
             flash('Вам на почту выслано письмо с подтверждением.')
-            return redirect(url_for('auth.login'))
+            token = user.generate_confirmation_token()
+            # send_confirm(user, token)
+            send_mail(user.email, "Confirm your account", 'confirm', user=user, token=token)
+            print("after sending")
+        return redirect(url_for('auth.login'))
     else:
         if form.username.data:
             flash("Something went wrong")

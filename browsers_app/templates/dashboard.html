@@ -8,7 +8,8 @@
     <div><strong>Username</strong>: {{ current_user.username }}</div>
     <div><strong>User Id</strong>: {{ current_user.id }}</div>
     <div><strong>Email</strong>: {{ current_user.email }}</div>
-    <div><strong>Date Joined</strong>: {{ current_user.date_added }}</div>
+    <div><strong>Date Joined</strong>: {{ current_user.date_added.strftime('%d-%m-%Y') }}</div>
+    <div><strong>Last Seen</strong>: {{ current_user.last_seen.strftime('%d-%m-%Y : %H:%M:%S') }}</div>
     <div><strong>Name</strong>: {{ current_user.name or ""}}</div>
     <div><strong>About</strong>: {{ current_user.about or ""}}</div>
 </div>
