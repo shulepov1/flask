@@ -220,11 +220,12 @@ def edit_post(id):
     страница для редактирования поста
     доступна автору поста и модераторам, админам
     """
-    if not (current_user.can(Permission.MODERATE) or current_user.id == post.poster.id):
-        return redirect('/posts')
+    
 
     post_ = Post.query.get_or_404(id)
     form = PostForm()
+    if not (current_user.can(Permission.MODERATE) or current_user.id == post_.poster.id):
+        return redirect('/posts')
 
     if form.validate_on_submit():
         post_.title = form.title.data
