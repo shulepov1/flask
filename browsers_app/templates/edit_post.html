@@ -1,17 +1,26 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<!-- Include stylesheet -->
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+
 <h2>Edit Post</h2>
 
-<form method="POST" class="my-4">
+<form method="POST" class="my-4" id="postForm">
     {{ form.csrf_token }}
     <div class="form-group">
         {{ form.title.label(class="mb-2") }}
         {{ form.title(class="form-control", placeholder="title") }}
     </div>
-    <div class="form-group">
-        {{ form.content.label(class="mb-2") }}
+    <br/>
+    <div class="form-group" style="display: none">
         {{ form.content(class="form-control", placeholder="content", rows="5") }}
+    </div>
+    <div class="form-group"> 
+        {{ form.content.label(class="mb-2") }}
+        <!-- Create the editor container -->
+        <div id="editor" id="content" >
+        </div>
     </div>
     <br/>
     <div class="form-group">
@@ -21,6 +30,26 @@
     <br/>
     <input type="submit" value="Submit" class="btn btn-primary">
 </form>
-{{ ckeditor.load() }}
-{{ ckeditor.config(name='content') }}
+
+<!-- Include the Quill library -->
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+
+<!-- Initialize Quill editor -->
+<script>
+  const quill = new Quill('#editor', {
+    theme: 'snow'
+  });
+</script>
+
+<script>
+    const editor = document.querySelector('.ql-editor');
+    const contentTextArea = document.getElementById('content');
+    editor.innerHTML = contentTextArea.value;
+    const form = document.getElementById('postForm');
+    console.log(form);
+    form.addEventListener('submit', (e) => {
+        contentTextArea.value = editor.innerHTML;
+    })
+</script>
+
 {% endblock %}

@@ -9,31 +9,7 @@ from ..user_agent_handler import get_browser
 from ..forms import NameForm, UserForm, PostForm, SearchForm, RoleForm
 from flask_login import login_required, current_user
 from flask_mail import Message
-from ..decorators import admin_required, permission_required
 
-from flask import Flask, request, Response
-import requests
-
-# app = Flask(__name__)
-# API_HOST = "http://95.164.89.123:8888"  # Replace with the actual API host
-
-# @main.route('/', defaults={'path': ''}, methods=["GET", "POST"])
-# @main.route('/<path:path>', methods=["GET", "POST"])
-# def proxy_to_API_HOST(path):
-#     res = requests.request(
-#         method=request.method,
-#         url=request.url.replace(request.host_url, f'{API_HOST}/'),
-#         headers={k: v for k, v in request.headers if k.lower() != 'host'},
-#         data=request.get_data(),
-#         cookies=request.cookies,
-#         allow_redirects=False,
-#     )
-#     print(res.url)
-#     print("here")
-#     excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
-#     response_headers = [(name, value) for name, value in res.raw.headers.items() if name.lower() not in excluded_headers]
-
-#     return Response(res.content, status=res.status_code, headers=response_headers)
 
 def get_db_connection():
     """
@@ -43,26 +19,6 @@ def get_db_connection():
     conn = sqlite3.connect('DB.db')
     conn.row_factory = sqlite3.Row
     return conn
-
-
-# @main.route("/admin")
-# @login_required
-# @admin_required
-# def admin():
-#     """
-#     тестовый View только для роли ADMIN
-#     """
-#     return "Admin only"
-
-
-# @main.route("/moder")
-# @login_required
-# @permission_required(Permission.MODERATE)
-# def moder():
-#     """
-#     тестовый View только для роли MODERATOR
-#     """
-    # return "Moderator only"
 
 
 @main.route("/")
