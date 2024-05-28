@@ -19,6 +19,7 @@ def send_mail(to, subject, template, **kwargs):
     mail.send(msg)
     print("SENT", mail)
 
+
 def send_confirm(user, token):
     """
     метод для отправки подтверждения
