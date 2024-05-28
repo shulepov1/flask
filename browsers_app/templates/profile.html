@@ -6,9 +6,17 @@
 <form method="POST" class="my-4 border border-primary-subtle p-4" >
     {{ form.csrf_token }}
     <p class="m-0">current role: <strong>{{ user.role.name}}</strong></p>
-    <div class="form-group">
-        {{ form.role.label(class="mb-1") }} 
-        {{ form.role(class="form-control m-0")}}
+    <div class="" style="list-style-type: none">
+        {% for role in form.role %} 
+            <li>
+                {% if role.data == user.role.name %}
+                    {{ role(checked=True) }}
+                {% else %}
+                    {{ role (checked=False) }}
+                {% endif %}
+                {{ role.label }}
+            </li>
+        {% endfor %}
     </div>
     <input type="submit" value="Submit" class="btn btn-primary btn-sm mt-2" />
 </form>
