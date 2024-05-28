@@ -10,7 +10,7 @@ class Config(object):
     MAIL_USE_TLS = True
     MAIL_USERNAME = environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = environ.get('MAIL_PASSWORD')
-
+    CKEDITOR_SERVE_LOCAL = False
 
 class TestingConfig:
     TESTING = True
